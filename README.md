@@ -1,1 +1,23 @@
-Details about this assignment can be found [on the course webpage](http://cs231n.github.io/), under Assignment #1 of Spring 2020`.
+CS231n Assignment    
+
+Link : https://cs231n.github.io/assignments2021/assignment1/   
+
+Assignment1      
+Q1: k-Nearest Neighbor classifier    
+Q2: Training a Support Vector Machine     
+Q3: Implement a Softmax classifier     
+Q4: Two-Layer Neural Network     
+Q5: Higher Level Representations: Image Features      
+     
+Assignment2      
+Q1: Fully-connected Neural Network      
+Q2: Batch Normalization     
+Q3: Dropout     
+Q4: ConvNet on CIFAR-10       
+      
+Assignment3     
+Q1: Image Captioning with Vanilla RNNs     
+Q2: Image Captioning with LSTMs   
+Q3: Image Gradients: Saliency maps and Fooling Images    
+Q4: Image Generation: Classes, Inversion, DeepDream    
+ 
