@@ -37,6 +37,8 @@ def svm_loss_naive(W, X, y, reg):
             margin = scores[j] - correct_class_score + 1  # note delta = 1
             if margin > 0:
                 loss += margin
+                dW[:, y[i]] -= X[i]
+                dW[:, j] -= X[i]
 
     # Right now the loss is a sum over all training examples, but we want it
     # to be an average instead so we divide by num_train.
@@ -44,10 +46,11 @@ def svm_loss_naive(W, X, y, reg):
     #지금은 그냥, 로스값을 training examples의 합으로 표현했지만,
     #그러나 이 로스로 합의 평균값이 필요하다, 따라서 갯수만큼 나눴다 
     loss /= num_train
+    dW /= num_train
 
     # Add regularization to the loss.
     loss += reg * np.sum(W * W)
-    #왜 이걸 이렇게 처리했을까?
+    dW += reg * W
 
     #############################################################################
     # TODO:                                                                     #
@@ -57,13 +60,8 @@ def svm_loss_naive(W, X, y, reg):
     # loss is being computed. As a result you may need to modify some of the    #
     # code above to compute the gradient.                                       #
     #############################################################################
-    # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
-
-    #1. Compute the gradient of the loss function and store it dW. 
     
-    # 로스 function의 그라디안트를 계산하고 dW에 저장하라
-
-    # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
+    #위 loss와 grad를 구하는 코드를 응용하는게 더 낫다는 얘기다.
 
     return loss, dW
 
@@ -84,7 +82,15 @@ def svm_loss_vectorized(W, X, y, reg):
     #############################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-    pass
+    num_train = X.shape[0]
+    delta = 1
+
+    scores = X.dot(W)
+    correct_class_score = scores[np.arange(num_train), y]
+    margins = np.maximum(0, scores - correct_class_score[:, None] + delta)
+    margins[np.arange(num_train), y] = 0
+    loss = margins.sum() / num_train
+    loss += 0.5 * reg * np.sum(W * W)
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
@@ -99,7 +105,11 @@ def svm_loss_vectorized(W, X, y, reg):
     #############################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-    pass
+    X_mask = np.zeros(margins.shape)
+    X_mask[margins > 0] = 1
+    X_mask[np.arange(num_train), y] = -np.sum(X_mask, axis = 1)
+    dW = X.T.dot(X_mask) / num_train
+    dW += reg * W
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
