@@ -25,14 +25,14 @@ def svm_loss_naive(W, X, y, reg):
     dW = np.zeros(W.shape)  # initialize the gradient as zero
 
     # compute the loss and the gradient
-    num_classes = W.shape[1]
-    num_train = X.shape[0]
+    num_classes = W.shape[1] #10
+    num_train = X.shape[0]   # 3073
     loss = 0.0
     for i in range(num_train):
-        scores = X[i].dot(W)
-        correct_class_score = scores[y[i]]
+        scores = X[i].dot(W) #내적
+        correct_class_score = scores[y[i]] #y[i] = c means X[i] has label c, where 0 <= c < C.
         for j in range(num_classes):
-            if j == y[i]:
+            if j == y[i]: #j는 0~10 사이의 수 인데... j랑 y[i] 같은경우는 뭐야?
                 continue
             margin = scores[j] - correct_class_score + 1  # note delta = 1
             if margin > 0:
@@ -40,10 +40,14 @@ def svm_loss_naive(W, X, y, reg):
 
     # Right now the loss is a sum over all training examples, but we want it
     # to be an average instead so we divide by num_train.
+
+    #지금은 그냥, 로스값을 training examples의 합으로 표현했지만,
+    #그러나 이 로스로 합의 평균값이 필요하다, 따라서 갯수만큼 나눴다 
     loss /= num_train
 
     # Add regularization to the loss.
     loss += reg * np.sum(W * W)
+    #왜 이걸 이렇게 처리했을까?
 
     #############################################################################
     # TODO:                                                                     #
@@ -55,7 +59,9 @@ def svm_loss_naive(W, X, y, reg):
     #############################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-    pass
+    #1. Compute the gradient of the loss function and store it dW. 
+    
+    # 로스 function의 그라디안트를 계산하고 dW에 저장하라
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
