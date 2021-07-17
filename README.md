@@ -1,8 +1,8 @@
 Q1: k-Nearest Neighbor classifier<br>
-Q2: Training a Support Vector Machine<br>  
-Q3: Implement a Softmax classifier<br>    
+Q2: Training a Support Vector Machine<br>
+Q3: Implement a Softmax classifier<br>
 Q4: Two-Layer Neural Network<br>
-Q5: Higher Level Representations: Image Features <br>
+Q5: Higher Level Representations: Image Features<br>
 <br>
 Q1: Multi-Layer Fully Connected Neural Networks <br>  
 Q2: Batch Normalization <br>  
