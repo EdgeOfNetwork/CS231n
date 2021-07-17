@@ -23,7 +23,7 @@ def svm_loss_naive(W, X, y, reg):
     - gradient with respect to weights W; an array of same shape as W
     """
     dW = np.zeros(W.shape)  # initialize the gradient as zero
-
+    #3073, 10
     # compute the loss and the gradient
     num_classes = W.shape[1] #10
     num_train = X.shape[0]   # 3073
@@ -39,7 +39,11 @@ def svm_loss_naive(W, X, y, reg):
             if margin > 0:
                 loss += margin
                 dW[:, y[i]] -= X[i]
+                print("dW 1차 : ",dW)
                 dW[:, j] += X[i]
+                print("dW 2차 :", dW)
+                # [0,,0,0,0,0,0,0,....0] []
+
 
     """
     margin이 0보다 큰 경우에 
