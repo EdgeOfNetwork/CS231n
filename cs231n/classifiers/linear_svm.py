@@ -28,8 +28,9 @@ def svm_loss_naive(W, X, y, reg):
     num_classes = W.shape[1] #10
     num_train = X.shape[0]   # 3073
     loss = 0.0
+
     for i in range(num_train):
-        scores = X[i].dot(W) #내적
+        scores = X[i].dot(W) #내적 고로 score.shape은 (C,)가 된다
         correct_class_score = scores[y[i]] #y[i] = c means X[i] has label c, where 0 <= c < C.
         for j in range(num_classes):
             if j == y[i]: #j는 0~10 사이의 수 인데... j랑 y[i] 같은경우는 뭐야?
@@ -38,7 +39,15 @@ def svm_loss_naive(W, X, y, reg):
             if margin > 0:
                 loss += margin
                 dW[:, y[i]] -= X[i]
-                dW[:, j] -= X[i]
+                dW[:, j] += X[i]
+
+    """
+    margin이 0보다 큰 경우에 
+    correct class의 경우에는 loop 돌때 마다 input image의 pixel value 만큼 빼주고 
+    
+    j 번째로 loop를 돌고 있는 j 번째 class score에서는 
+    input image의 pixel value만큼을 더해준다.
+    """
 
     # Right now the loss is a sum over all training examples, but we want it
     # to be an average instead so we divide by num_train.
@@ -48,9 +57,12 @@ def svm_loss_naive(W, X, y, reg):
     loss /= num_train
     dW /= num_train
 
+    #1/N 구현
+
     # Add regularization to the loss.
+    #오버피팅 방지를 위해 L2 Reg 추가
     loss += reg * np.sum(W * W)
-    dW += reg * W
+    dW = dW + reg * 2 * W
 
     #############################################################################
     # TODO:                                                                     #
@@ -82,15 +94,17 @@ def svm_loss_vectorized(W, X, y, reg):
     #############################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-    num_train = X.shape[0]
-    delta = 1
+    num_classes = W.shape[1]
 
+    num_train = X.shape[0]
     scores = X.dot(W)
-    correct_class_score = scores[np.arange(num_train), y]
-    margins = np.maximum(0, scores - correct_class_score[:, None] + delta)
-    margins[np.arange(num_train), y] = 0
-    loss = margins.sum() / num_train
-    loss += 0.5 * reg * np.sum(W * W)
+    
+    correct_class_score = scores[np.arange(num_train), y].reshape(num_train, 1)
+    margin = np.maximum(0, scores - correct_class_score + 1) #1 for robustness
+    
+    margin[np.arange(num_train), y] = 0
+    loss = margin.sum() / num_train
+    loss += reg * np.sum(W * W)
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
@@ -105,11 +119,13 @@ def svm_loss_vectorized(W, X, y, reg):
     #############################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-    X_mask = np.zeros(margins.shape)
-    X_mask[margins > 0] = 1
-    X_mask[np.arange(num_train), y] = -np.sum(X_mask, axis = 1)
-    dW = X.T.dot(X_mask) / num_train
-    dW += reg * W
+    margin[margin > 0] = 1 #???
+    valid_margin_count = margin.sum(axis = 1)
+
+    margin[np.arange(num_train), y] -= valid_margin_count
+    dW = X.T.dot(margin) / num_train
+
+    dW = dW + reg * 2 * W
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
