@@ -76,10 +76,18 @@ class KNearestNeighbor(object):
                 # not use a loop over dimension, nor use np.linalg.norm().          #
                 #####################################################################
                 # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
-
-                pass
-
+                
+                #| test - train |  =  pixel-wise absolute value diff
+                # 이것들의 sum 
+                #x-y 니까 train에서 test를 빼야하는거 아닌가?
+                #dists[i][j] = np.linalg.norm()
+                dists[i,j] = np.sqrt(np.sum((X[i,:] - self.X_train[j,:])**2))
+                #dists[i,j] = np.sqrt(np.sum(np.square(self.X_train[j,:] - X[i,:])))
+                #어차피 제곱이니까 동일하다
+                #dists[i][j] = np.sqrt(np.sum(np.square(X[i] - self.X_train[j])))
+     
                 # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
+      
         return dists
 
     def compute_distances_one_loop(self, X):
@@ -100,9 +108,8 @@ class KNearestNeighbor(object):
             # Do not use np.linalg.norm().                                        #
             #######################################################################
             # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
-
-            pass
-
+            dists[i,:] = np.sqrt(np.sum(np.square(self.X_train - X[i,:]), axis = 1))
+            
             # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         return dists
 
@@ -130,8 +137,12 @@ class KNearestNeighbor(object):
         #       and two broadcast sums.                                         #
         #########################################################################
         # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
-
-        pass
+        dists = np.sqrt(np.reshape(np.sum(X**2, axis = 1), [num_test, 1]) + \
+                        np.reshape(np.sum(self.X_train**2, axis=1), [1,num_train]) + \
+                        - 2 * np.matmul(X, self.X_train.T))
+        #broad cast sums를 하기 위해서 제곱 내부를 풀었다?
+        
+        #dists = np.sum(np.abs(num_test - num_train))
 
         # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         return dists
@@ -164,7 +175,8 @@ class KNearestNeighbor(object):
             #########################################################################
             # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-            pass
+            closest_y = self.y_train[np.argsort(dists[i])][:k]
+            # 계산된 거리값들을 sort한 후에 k 값 만큼 자른것을 closest y로 잡았다.
 
             # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
             #########################################################################
@@ -176,7 +188,11 @@ class KNearestNeighbor(object):
             #########################################################################
             # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-            pass
+            #제일 low한 애를 찾아야하니 argmin이 들어가겠구만
+
+            y_pred[i] = np.bincount(closest_y).argmax()
+            # 그 거릿값만큼 잡은애의 빈도를 추출한다. 그리고 그 추출값에서
+            # 가장 많이 나온애가 y_pred 즉 정답지다.
 
             # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
